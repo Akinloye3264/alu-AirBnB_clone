@@ -1,4 +1,5 @@
-AirBnB Clone - Command Interpreter Project Description This project is the first step toward building a full web application of the AirBnB clone. In this first part, we will create a command interpreter to manage your AirBnB objects. The command interpreter will allow us to do the following:
+AirBnB Clone - Command Interpreter Project 
+This project is the first step toward building a full web application of the AirBnB clone. In this first part, we will create a command interpreter to manage our AirBnB objects. The command interpreter will allow us to do the following:
 
 Create new objects (e.g., users, cities, places) Retrieve an object from a file, a database, etc. Perform operations on the objects (like updating, deleting) Store and persist data This console will be a simple command-line interface that processes commands through specific functions.
 
