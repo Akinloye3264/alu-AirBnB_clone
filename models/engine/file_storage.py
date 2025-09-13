@@ -1,71 +1,51 @@
 #!/usr/bin/python3
 """
-This module defines a FileStorage class that stores
-and retrieves objects to and from a JSON file.
+This module defines the FileStorage class.
 """
-
 import json
-from models.base_model import BaseModel
-from models.user import User
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.place import Place
-from models.review import Review
 
 
 class FileStorage:
     """
-    A file storage system for storing and retrieving objects.
+    Serializes instances to a JSON file and deserializes JSON file to instances.
     """
-
     __file_path = "file.json"
     __objects = {}
 
     def all(self):
         """
-        Returns the dictionary of all objects currently stored.
-
-        Returns:
-            dict: A dictionary of all objects currently stored.
+        Returns the dictionary __objects.
         """
         return FileStorage.__objects
 
     def new(self, obj):
         """
-        Adds a new object to the storage.
-
-        Args:
-            obj (object): The object to be added to the storage.
+        Sets in __objects the obj with key <obj class name>.id.
         """
-        self.__objects[f"{obj.__class__.__name__}.{obj.id}"] = obj
+        key = f"{obj.__class__.__name__}.{obj.id}"
+        FileStorage.__objects[key] = obj
 
     def save(self):
         """
-        Saves the objects in the storage to a JSON file.
+        Serializes __objects to the JSON file.
         """
-        obj_dict = {}
-
-        for key, value in self.__objects.items():
-            obj_dict[key] = value.to_dict()
-
-        try:
-            with open(self.__file_path, 'w') as file:
-                json.dump(obj_dict, file, indent=2)
-        except FileNotFoundError:
-            pass
+        new_dict = {}
+        for key, value in FileStorage.__objects.items():
+            new_dict[key] = value.to_dict()
+        with open(FileStorage.__file_path, 'w') as f:
+            json.dump(new_dict, f)
 
     def reload(self):
         """
-        Reloads the objects from the JSON file into the storage.
+        Deserializes the JSON file to __objects.
         """
         try:
-            with open(FileStorage.__file_path, 'r') as file:
-                obj_dict = json.load(file)
-
+            with open(FileStorage.__file_path, 'r') as f:
+                obj_dict = json.load(f)
+                from models.base_model import BaseModel
                 for key, value in obj_dict.items():
-                    self.__objects[key] = eval(
-                        f"{value['__class__']}(**{value})")
-
+                    class_name = value["__class__"]
+                    if class_name == "BaseModel":
+                        self.__objects[key] = BaseModel(**value)
         except FileNotFoundError:
             pass
