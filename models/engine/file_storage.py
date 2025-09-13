@@ -3,6 +3,8 @@
 This module defines the FileStorage class.
 """
 import json
+import os
+from models.base_model import BaseModel
 
 
 class FileStorage:
@@ -39,13 +41,12 @@ class FileStorage:
         """
         Deserializes the JSON file to __objects.
         """
-        try:
-            with open(FileStorage.__file_path, 'r') as f:
-                obj_dict = json.load(f)
-                from models.base_model import BaseModel
-                for key, value in obj_dict.items():
-                    class_name = value["__class__"]
-                    if class_name == "BaseModel":
-                        self.__objects[key] = BaseModel(**value)
-        except FileNotFoundError:
-            pass
+        if os.path.exists(FileStorage.__file_path):
+            try:
+                with open(FileStorage.__file_path, 'r') as f:
+                    obj_dict = json.load(f)
+                    for key, value in obj_dict.items():
+                        class_name = value["__class__"]
+                        self.__objects[key] = eval(class_name)(**value)
+            except Exception:
+                pass

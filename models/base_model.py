@@ -8,46 +8,47 @@ from datetime import datetime
 
 class BaseModel:
     """
-    A class that defines all common attributes/methods for other classes.
+    Defines all common attributes/methods for other classes.
     """
 
     def __init__(self, *args, **kwargs):
         """
         Initializes a new BaseModel instance.
-
-        Args:
-            *args: Unused positional arguments.
-            **kwargs: Keyword arguments for creating an instance from a dictionary.
         """
+        from models import storage
         if kwargs:
             for key, value in kwargs.items():
-                if key == "created_at" or key == "updated_at":
-                    setattr(self, key, datetime.fromisoformat(value))
-                elif key != "__class__":
-                    setattr(self, key, value)
+                if key != "__class__":
+                    if key in ["created_at", "updated_at"]:
+                        setattr(self, key, datetime.fromisoformat(value))
+                    else:
+                        setattr(self, key, value)
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+            storage.new(self)
 
     def __str__(self):
         """
-        Returns a string representation of the BaseModel instance.
+        Returns a string representation of the BaseModel.
         """
         return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
 
     def save(self):
         """
-        Updates the updated_at attribute with the current datetime.
+        Updates the updated_at attribute and saves the object.
         """
+        from models import storage
         self.updated_at = datetime.now()
+        storage.save()
 
     def to_dict(self):
         """
-        Returns a dictionary containing all keys/values of the instance.
+        Returns a dictionary representation of the instance.
         """
-        my_dict = self.__dict__.copy()
-        my_dict['__class__'] = self.__class__.__name__
-        my_dict['created_at'] = self.created_at.isoformat()
-        my_dict['updated_at'] = self.updated_at.isoformat()
-        return my_dict
+        instance_dict = self.__dict__.copy()
+        instance_dict["__class__"] = self.__class__.__name__
+        instance_dict["created_at"] = self.created_at.isoformat()
+        instance_dict["updated_at"] = self.updated_at.isoformat()
+        return instance_dict
