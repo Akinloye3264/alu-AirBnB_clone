@@ -15,7 +15,7 @@ from models.review import Review
 class FileStorage:
     """
     Serializes instances to a JSON file and deserializes JSON file to instances.
-
+    
     Private class attributes:
         __file_path (str): path to the JSON file.
         __objects (dict): a dictionary of all instantiated objects.
