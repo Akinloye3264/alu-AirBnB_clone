@@ -39,7 +39,7 @@ class TestBaseModel(unittest.TestCase):
         """
         self.assertIsInstance(self.model.created_at, datetime.datetime)
 
-    def test_updated_at_is_datetime(self_):
+    def test_updated_at_is_datetime(self):
         """
         Test that updated_at is a datetime object.
         """
