@@ -181,7 +181,7 @@ class HBNBCommand(cmd.Cmd):
         """
         Handles <class name>.method() syntax.
         """
-        parts = line.split('.')
+        parts = line.split('.', 1)
         if len(parts) == 2 and parts[0] in self.classes:
             cls_name = parts[0]
             method_call = parts[1]
@@ -205,13 +205,13 @@ class HBNBCommand(cmd.Cmd):
                 # Check for dictionary syntax
                 if '{' in update_args and '}' in update_args:
                     instance_id_end = update_args.find(',')
-                    instance_id = update_args[1:instance_id_end - 1]
+                    instance_id = update_args[1:instance_id_end]
                     try:
                         dict_str = update_args[update_args.find('{'):update_args.find('}') + 1]
                         update_dict = eval(dict_str)
                         for key, value in update_dict.items():
                             self.do_update(
-                                cls_name + " " + instance_id + " " + key + " " + str(value))
+                                cls_name + " " + instance_id.strip(' "') + " " + key + " " + str(value))
                     except (SyntaxError, ValueError) as e:
                         print(e)
                 else:
