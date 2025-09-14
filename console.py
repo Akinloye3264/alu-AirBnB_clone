@@ -12,6 +12,7 @@ from models.place import Place
 from models.review import Review
 from models import storage
 import json
+import re
 
 
 class HBNBCommand(cmd.Cmd):
@@ -204,16 +205,17 @@ class HBNBCommand(cmd.Cmd):
                 
                 # Check for dictionary syntax
                 if '{' in update_args and '}' in update_args:
-                    instance_id_end = update_args.find(',')
-                    instance_id = update_args[1:instance_id_end]
-                    try:
-                        dict_str = update_args[update_args.find('{'):update_args.find('}') + 1]
-                        update_dict = eval(dict_str)
-                        for key, value in update_dict.items():
-                            self.do_update(
-                                cls_name + " " + instance_id.strip(' "') + " " + key + " " + str(value))
-                    except (SyntaxError, ValueError) as e:
-                        print(e)
+                    match = re.match(r'^(.*?)(\s*,\s*)({.*})$', update_args)
+                    if match:
+                        instance_id = match.group(1).strip('"')
+                        dict_str = match.group(3)
+                        try:
+                            update_dict = eval(dict_str)
+                            for key, value in update_dict.items():
+                                self.do_update(
+                                    cls_name + " " + instance_id + " " + key + " " + str(value))
+                        except (SyntaxError, ValueError) as e:
+                            print(e)
                 else:
                     parts = update_args.split(", ", 2)
                     instance_id = parts[0].strip('"')
